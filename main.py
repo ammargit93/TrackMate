@@ -11,6 +11,26 @@ cursor.execute('''
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT UNIQUE NOT NULL,
         password TEXT NOT NULL
+        
+    )
+''')
+cursor.execute('''
+    CREATE TABLE IF NOT EXISTS Subjects (
+        sub_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        sub_name TEXT UNIQUE NOT NULL,
+        total_lec integer NOT NULL default 0
+    )
+''')
+
+cursor.execute('''
+    CREATE TABLE IF NOT EXISTS Attendance (
+        att_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id integer NOT NULL,
+        sub_id integer NOT NULL,
+        lec_attended integer not null default 0,
+        foreign key (id) references Users (id),
+        foreign key (sub_id) references subjects (sub_id)
+ 
     )
 ''')
 conn.commit()
@@ -77,13 +97,20 @@ def login():
         password = request.form.get('password')
         res = find_user(username, password)
         print(res)
+        session['username'] = username
         return redirect(url_for('dashboard'))
 
     return render_template('login.html')
 
 
-@app.route('/dashboard')
+@app.route('/dashboard', methods=['GET', 'POST'])
 def dashboard():
+    if request.method == 'POST':
+        subject_name = request.form.get('subject_name')
+        total_lec = request.form.get('total_lectures')
+        print(subject_name, total_lec)
+        pass
+
     return render_template('dashboard.html')
 
 
