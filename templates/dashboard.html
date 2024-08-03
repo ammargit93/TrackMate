@@ -6,6 +6,12 @@
     <title>Dashboard</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+    <style>
+        .percentage {
+            font-weight: bold;
+            color: #007bff;
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -27,10 +33,31 @@
                     <label for="total_lectures">Total Lectures</label>
                     <input type="number" class="form-control" id="total_lectures" name="total_lectures" required>
                 </div>
+                <div class="form-group">
+                    <label for="lectures_attended">Lectures Attended</label>
+                    <input type="number" class="form-control" id="lectures_attended" name="lectures_attended" required>
+                </div>
                 <button type="submit" class="btn btn-success">Add Subject</button>
             </form>
         </div>
+
+        <h3>Subjects</h3>
+        <ul class="list-group">
+            {% for subject in record %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                {{ subject[1] }} - Total Lectures: {{ subject[2] }}, Lectures Attended: {{ subject[3] }}
+                <div class="percentage">
+                    {{ subject[4] }}%
+                </div>
+                <div>
+                    <button class="btn btn-success btn-sm mr-2">✔</button>
+                    <button class="btn btn-danger btn-sm">✖</button>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
     </div>
+
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
