@@ -3,52 +3,58 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block head %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
-    <style>
-        .percentage {
-            font-weight: bold;
-            color: #007bff;
-        }
-    </style>
+<link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+<style>
+    .percentage {
+        font-weight: bold;
+        color: #007bff;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
-    <h2>Dashboard</h2>
-    <p>Welcome to your dashboard. Here you can manage your subjects.</p>
+<h2>Dashboard</h2>
+<p>Welcome to your dashboard. Here you can manage your subjects.</p>
 
-    <button class="btn btn-primary mb-4" data-toggle="collapse" data-target="#addSubjectForm">Add a Subject</button>
+<button class="btn btn-primary mb-4" data-toggle="collapse" data-target="#addSubjectForm">Add a Subject</button>
 
-    <div id="addSubjectForm" class="collapse">
-        <form action="/dashboard" method="post">
-            <div class="form-group">
-                <label for="subject_name">Subject Name</label>
-                <input type="text" class="form-control" id="subject_name" name="subject_name" required>
-            </div>
-            <div class="form-group">
-                <label for="total_lectures">Total Lectures</label>
-                <input type="number" class="form-control" id="total_lectures" name="total_lectures" required>
-            </div>
-            <div class="form-group">
-                <label for="lectures_attended">Lectures Attended</label>
-                <input type="number" class="form-control" id="lectures_attended" name="lectures_attended" required>
-            </div>
-            <button type="submit" class="btn btn-success">Add Subject</button>
-        </form>
-    </div>
+<div id="addSubjectForm" class="collapse">
+    <form action="/dashboard" method="post">
+        <div class="form-group">
+            <label for="subject_name">Subject Name</label>
+            <input type="text" class="form-control" id="subject_name" name="subject_name" required>
+        </div>
+        <div class="form-group">
+            <label for="total_lectures">Total Lectures</label>
+            <input type="number" class="form-control" id="total_lectures" name="total_lectures" required>
+        </div>
+        <div class="form-group">
+            <label for="lectures_attended">Lectures Attended</label>
+            <input type="number" class="form-control" id="lectures_attended" name="lectures_attended" required>
+        </div>
+        <button type="submit" class="btn btn-success">Add Subject</button>
+    </form>
+</div>
 
-    <h3>Subjects</h3>
-    <ul class="list-group">
-        {% for subject in record %}
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-            {{ subject[1] }} - Total Lectures: {{ subject[2] }}, Lectures Attended: {{ subject[3] }}
-            <div class="percentage">
-                {{ subject[4] }}%
-            </div>
-            <div>
-                <button class="btn btn-success btn-sm mr-2">✔</button>
-                <button class="btn btn-danger btn-sm">✖</button>
-            </div>
-        </li>
-        {% endfor %}
-    </ul>
+<h3>Subjects</h3>
+<ul class="list-group">
+    {% for subject in record %}
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+        {{ subject[1] }} - Total Lectures: {{ subject[2] }}, Lectures Attended: {{ subject[3] }}
+        <div class="percentage">
+            {{ subject[4] }}%
+        </div>
+        <div>
+            <form action="/mark_attendance" method="post" style="display: inline;">
+                <input type="hidden" name="subject_id" value="{{ subject[1] }}">
+                <button type="submit" class="btn btn-success btn-sm">✔</button>
+            </form>
+            <form action="/delete_subject" method="post" style="display: inline;">
+                <input type="hidden" name="subject_id" value="{{ subject[1] }}">
+                <button type="submit" class="btn btn-danger btn-sm">✖</button>
+            </form>
+        </div>
+    </li>
+    {% endfor %}
+</ul>
 {% endblock %}

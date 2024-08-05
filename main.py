@@ -1,6 +1,7 @@
 from flask import *
 from SQL import init_db, find_user, insert_user
 import sqlite3
+from api import *
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'
@@ -39,12 +40,12 @@ def login():
         username = request.form.get('username')
         password = request.form.get('password')
         res = find_user(username, password)
-        print(res)
         conn = sqlite3.connect('database.db')
         cursor = conn.cursor()
         user_id = cursor.execute('''select id from Users where username=? and password=?''', (username, password))
         session['username'] = username
         session['user_id'] = user_id.fetchall()[0][0]
+        conn.close()
         return redirect(url_for('dashboard'))
 
     return render_template('login.html')
@@ -52,7 +53,7 @@ def login():
 
 @app.route('/dashboard', methods=['GET', 'POST'])
 def dashboard():
-    if request.method == 'POST':
+    if request.method == 'POST' and 'subject_id' not in request.form:
         subject_name = request.form.get('subject_name')
         total_lec = request.form.get('total_lectures')
         lec_attended = request.form.get('lectures_attended')
@@ -71,11 +72,10 @@ def dashboard():
             print(f'Error: {e}')
         finally:
             conn.close()
-
     conn = sqlite3.connect('database.db')
     cur = conn.cursor()
     record = cur.execute(
-            '''
+        '''
                    select Users.username,Subjects.sub_name,Subjects.total_lec, Attendance.lec_attended,
                    ROUND((Attendance.lec_attended * 100.0 / Subjects.total_lec), 2) AS attendance_percentage
                    from Attendance join Users on Attendance.id = Users.id
@@ -83,6 +83,39 @@ def dashboard():
             ''')
 
     return render_template('dashboard.html', record=record)
+
+
+@app.route('/mark_attendance', methods=['GET', 'POST'])
+def mark_attendance():
+    if request.method == 'POST':
+        s_name = request.form.get('subject_id')
+        conn = sqlite3.connect('database.db')
+        cur = conn.cursor()
+        cur.execute('''update Subjects set total_lec=total_lec+1 where sub_name=?''', (s_name,))
+        conn.commit()
+        sid = cur.execute('''select sub_id from Subjects where sub_name=?''', (s_name,))
+        conn.commit()
+        cur.execute('''update Attendance set lec_attended=lec_attended+1 where sub_id=?''', (sid.fetchall()[0][0],))
+        conn.commit()
+    return redirect('dashboard')
+
+
+@app.route('/delete_subject', methods=['GET', 'POST'])
+def delete_subject():
+    if request.method == 'POST':
+        s_name = request.form.get('subject_id')
+        conn = sqlite3.connect('database.db')
+        cur = conn.cursor()
+        sid = cur.execute('''select sub_id from Subjects where sub_name=?''', (s_name,))
+        conn.commit()
+
+        cur.execute('''delete from Subjects where sub_name=?''', (s_name,))
+        conn.commit()
+
+        print(s_name, sid.fetchone())
+        cur.execute('''delete from Attendance where sub_id=?''', (sid.fetchone(),))
+        conn.commit()
+    return redirect('dashboard')
 
 
 if __name__ == '__main__':
