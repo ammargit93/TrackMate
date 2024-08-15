@@ -1,7 +1,6 @@
 from flask import *
 from SQL import init_db, find_user, insert_user
 import sqlite3
-from api import *
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'
@@ -28,7 +27,8 @@ def signup():
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
-        insert_user(username, password)
+        description = request.form.get('description')
+        insert_user(username, password, description)
         return redirect(url_for('login'))
 
     return render_template('signup.html')
@@ -74,13 +74,13 @@ def dashboard():
             conn.close()
     conn = sqlite3.connect('database.db')
     cur = conn.cursor()
-    record = cur.execute(
+    record = (cur.execute(
         '''
                    select Users.username,Subjects.sub_name,Subjects.total_lec, Attendance.lec_attended,
                    ROUND((Attendance.lec_attended * 100.0 / Subjects.total_lec), 2) AS attendance_percentage
                    from Attendance join Users on Attendance.id = Users.id
                    join Subjects on Attendance.sub_id = Subjects.sub_id  
-            ''')
+            '''))
 
     return render_template('dashboard.html', record=record)
 

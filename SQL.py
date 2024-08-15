@@ -8,8 +8,8 @@ def init_db():
         CREATE TABLE IF NOT EXISTS Users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT UNIQUE NOT NULL,
-            password TEXT NOT NULL
-    
+            password TEXT NOT NULL,
+            description TEXT NOT NULL
         )
     ''')
     cursor.execute('''
@@ -35,14 +35,14 @@ def init_db():
     conn.close()
 
 
-def insert_user(username, password):
+def insert_user(username, password, description):
     conn = sqlite3.connect('database.db')
     cursor = conn.cursor()
 
     try:
         cursor.execute('''
-            INSERT INTO Users (username, password) VALUES (?, ?)
-        ''', (username, password))
+            INSERT INTO Users (username, password, description) VALUES (?, ?, ?)
+        ''', (username, password, description))
         conn.commit()
         print('User inserted successfully!')
     except sqlite3.IntegrityError as e:

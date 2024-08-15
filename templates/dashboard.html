@@ -18,6 +18,11 @@
 
 <button class="btn btn-primary mb-4" data-toggle="collapse" data-target="#addSubjectForm">Add a Subject</button>
 
+<!-- Export as txt/pdf button -->
+<form action="/export" method="post" style="display: inline;">
+    <button type="submit" class="btn btn-secondary mb-4">Export as txt/pdf</button>
+</form>
+
 <div id="addSubjectForm" class="collapse">
     <form action="/dashboard" method="post">
         <div class="form-group">
