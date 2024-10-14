@@ -34,5 +34,6 @@ TrackMate is a web-based attendance tracking system built using Flask and SQLite
 3. **Run the app**
    ```bash
    python app.py
-this will run the app at localhost:800
+this will run the app at localhost:8000
+
 
